@@ -1,41 +1,38 @@
 import socket, traceback
 import sys
 
-if len(sys.argv) < 3:
-    print("Too few arguments")
-    sys.exit(-1)
+if len(sys.argv) < 2:
+    print("usage: simplex-talk host")
+    sys.exit(1)
     
 host = sys.argv[1]
-port = int(sys.argv[2])
+port = 51432
 
-
-    
 while 1:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Criando o socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
+
     try:
         s.connect((host, port))
     except socket.error as e:
-        print ("Strange error creating socket: %s" % e)
+        print ("%s : simplex-talk: socket error" % e)
         sys.exit(1)
     except socket.gaierror as e:
-        print ("Error connecting to server: %s" % e)
-        sys.exit(1)
-    #import pdb; pdb.set_trace()
-    import time
+        print ("%s : simplex-talk: connect error" % e)
+        sys.exit(1)     
+    except Exception as e:
+        print( "Error : %s" % e)    
+        continue 
 
-
-    #buf = s.sendmsg([b'Redes e chato'])
-    
-    #if not len(buf):
-    #    break
-    #sys.stdout.write(buf)
-    
-    try:
-        #s.connect((host, port))
-        #s.sendall(buf.encode('utf-8'))
-        time.sleep(2)
-        s.send(b"Teste 123")
-
+    # Mandando mensagem para o servidor
+    try :
+        data = input("Send data to server:\n").encode('utf-8')
+        s.send(data)
     except socket.error as e:
-        print ("Strange error creating socket: %s" % e)
+        print ("%s : simplex-talk: socket error" % e)
         sys.exit(1)
+    except Exception as e:
+        print( "Error: %s" % e)    
+        continue 
+
+    s.close()
