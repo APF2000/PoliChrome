@@ -1,12 +1,15 @@
 import socket, traceback
 import sys
 
+
 if len(sys.argv) < 2:
     print("usage: simplex-talk host")
     sys.exit(1)
     
 host = sys.argv[1]
 port = 51432
+
+if 
 
 while 1:
     # Criando o socket
@@ -36,3 +39,5 @@ while 1:
         continue 
 
     s.close()
+  
+# Driver code 

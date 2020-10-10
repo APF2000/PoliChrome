@@ -35,3 +35,11 @@ while 1:
         continue 
     
     clientsock.close()
+
+
+site_name = "www.sitelegal.com.br"
+path = './teste.txt'
+try:
+    archive = open(path, 'r').read()
+except FileNotFoundError:
+    print("%s not found" % path)
