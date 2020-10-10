@@ -25,23 +25,28 @@ while 1:
 
         buf = clientsock.recv(256)
         request = buf.decode('utf-8')
-        print("Received : %s" % request)
+        print("Received :\n %s" % request)
 
         firstline = request.split('\n')[0]
-        #import pdb; pdb.set_trace()
         archive_name = firstline.split(' ')[1]
         archive_name = archive_name[1:]
 
         print(archive_name)
 
-        archive = open(archive_name, 'r').read()
+        #import pdb; pdb.set_trace()
+        try:
+            archive = open(archive_name, 'r').read()
 
-        status = "HTTP/1.1 200 OK\n"
-        length = "Content-Length: %d\n" % len(archive)
-        content = "Content-Type: %s\n\n" % mimetypes.MimeTypes().guess_type(archive_name)[0]
+            status = "HTTP/1.1 200 OK\n"
+            length = "Content-Length: %d\n" % len(archive)
+            content = "Content-Type: %s\n\n" % mimetypes.MimeTypes().guess_type(archive_name)[0]
         
-        data = status + length + content + archive
-        print(data)
+            data = status + length + content + archive
+        except FileNotFoundError:
+            print("%s not found\n" % archive_name)
+            data = "HTTP/1.1 400 ERRO \n\n"
+            #continue      
+              
         data = data.encode('utf-8')
 
         clientsock.sendall(data)
@@ -55,13 +60,9 @@ while 1:
     
         print("%s : simplex-talk: socket" % e)        
         sys.exit(1)
-        
-    except Exception as e:
-        print( "Error: %s" % e)    
-        continue 
-   
-    except FileNotFoundError:
-        print("%s not found\n" % archive_name)
-        data = "HTTP/1.1 400 ERRO \n\n"
+
+    #except Exception as e:
+    #    print( "Error: %s" % e)    
+    #    continue 
     
     clientsock.close()

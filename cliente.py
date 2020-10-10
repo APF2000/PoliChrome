@@ -16,14 +16,14 @@ port = int(port)
 archive = tudo[2:]
 archive = '/'.join(archive)
 
+ip = socket.gethostbyname(host)
+
 try:
-    host_ip = socket.gethostbyaddr(host)
+    host = socket.gethostbyaddr(ip)[0]
 except socket.herror:
     print("Can't resolve host")
-    sys.exit(-1)
-    
-host = host_ip[0]
-ip = host_ip[2][0]
+    #sys.exit(-1)
+    host = "Unknown host"
 
 while 1:
     # Criando o socket
@@ -42,10 +42,9 @@ while 1:
         continue 
 
     # Mandando mensagem para o servidor (GET)
-    try :
-        #data = input("Send data to server:\n").encode('utf-8')
-        #archive = input("Nome do arquivo?\n")
+    try:        
         data = "GET /%s HTTP/1.1\nHost: %s\n\n" % (archive, host)
+        
         data = data.encode('utf-8')
 
         s.send(data)
@@ -56,18 +55,14 @@ while 1:
     except Exception as e:
         print( "Error: %s" % e)    
         continue
-    
-        #serversock, serveraddr = s.accept()
-        #print ("Got connection from", serversock.getpeername())
-    
+
     # Receber o que foi pedido
     try:
-        #import pdb; pdb.set_trace()
         buf = s.recv(256)
         response = buf.decode('utf-8')
         content = response.split('\n')[-1]
     
-        print("Received2: %s" % response)
+        print("Received: \n%s" % response)
 
         s.close()
         break
