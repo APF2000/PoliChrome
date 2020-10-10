@@ -1,21 +1,29 @@
 import socket, traceback
 import sys
-
+import re
+import time
 
 if len(sys.argv) < 2:
     print("usage: simplex-talk host")
     sys.exit(1)
     
-host = sys.argv[1]
-port = 51432
+entrada = sys.argv[1]
 
-#print("oi")
-tudo = socket.gethostbyaddr(host)
-host = tudo[0]
-ip = tudo[2][0]
+tudo = re.split(':|/', entrada)
+(host, port) = tudo[0:2]
+port = int(port)
 
-#print(ip, host)
-#print("oi2")
+archive = tudo[2:]
+archive = '/'.join(archive)
+
+try:
+    host_ip = socket.gethostbyaddr(host)
+except socket.herror:
+    print("Can't resolve host")
+    sys.exit(-1)
+    
+host = host_ip[0]
+ip = host_ip[2][0]
 
 while 1:
     # Criando o socket
@@ -33,10 +41,10 @@ while 1:
         print( "Error : %s" % e)    
         continue 
 
-    # Mandando mensagem para o servidor
+    # Mandando mensagem para o servidor (GET)
     try :
         #data = input("Send data to server:\n").encode('utf-8')
-        archive = input("Nome do arquivo?\n")
+        #archive = input("Nome do arquivo?\n")
         data = "GET /%s HTTP/1.1\nHost: %s\n\n" % (archive, host)
         data = data.encode('utf-8')
 
@@ -52,23 +60,20 @@ while 1:
         #serversock, serveraddr = s.accept()
         #print ("Got connection from", serversock.getpeername())
     
+    # Receber o que foi pedido
     try:
+        #import pdb; pdb.set_trace()
         buf = s.recv(256)
         response = buf.decode('utf-8')
         content = response.split('\n')[-1]
     
-        print("Received2: %s" % content)
+        print("Received2: %s" % response)
+
+        s.close()
+        break
+        
     except Exception as e:
         print( "Error: %s" % e)    
         continue
 
     s.close()
-  
-  
-  
-  
-  
-  
-  
-  
-# Driver code 
