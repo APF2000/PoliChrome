@@ -2,6 +2,13 @@ import socket, traceback
 import sys
 import re
 import time
+#import ipadress
+
+import which_ipv
+
+MAX_BUFFER = 1024 #256
+
+# ip:porta/arquivo ou nome:porta/arquivo.
 
 if len(sys.argv) < 2:
     print("usage: simplex-talk host")
@@ -16,19 +23,28 @@ port = int(port)
 archive = tudo[2:]
 archive = '/'.join(archive)
 
-ip = socket.gethostbyname(host)
+#import pdb; pdb.set_trace()
+
+# Criando o socket (consegue pedir IPv4 ou IPv6)
+ipv_qual = which_ipv.ipv_qual(host, port)
+s = socket.socket(ipv_qual, socket.SOCK_STREAM)
+
+#ip = socket.gethostbyname(host)
+ip = socket.getaddrinfo(host, None, ipv_qual)[0][4][0] # nao pergunte por que
+print(ip)
+
+#print("Batata")
+#print(socket.getfqdn(ip))
 
 try:
-    host = socket.gethostbyaddr(ip)[0]
+    #host = socket.gethostbyaddr(ip)[0]
+    print(host)
 except socket.herror:
     print("Can't resolve host")
     #sys.exit(-1)
     host = "Unknown host"
 
 while 1:
-    # Criando o socket
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
-
     try:
         s.connect((ip, port))
     except socket.error as e:
@@ -42,8 +58,10 @@ while 1:
         continue 
 
     # Mandando mensagem para o servidor (GET)
-    try:        
-        data = "GET /%s HTTP/1.1\nHost: %s\n\n" % (archive, host)
+    try:
+        #import pdb; pdb.set_trace()
+
+        data = "GET /%s HTTP/1.1\r\nHOST: %s\r\n\r\n" % (archive, host)
         
         data = data.encode('utf-8')
 
@@ -58,7 +76,7 @@ while 1:
 
     # Receber o que foi pedido
     try:
-        buf = s.recv(256)
+        buf = s.recv(MAX_BUFFER)
         response = buf.decode('utf-8')
         content = response.split('\n')[-1]
     

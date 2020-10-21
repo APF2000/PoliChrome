@@ -1,14 +1,18 @@
-import socket as soc
+import socket
 import sys
 import mimetypes
 import re
 
+import which_ipv
+
 host = 'localhost'
 port = 51432
 
+ipv_qual = which_ipv.ipv_qual(host, port)
+
 # Cria uma porta passiva
-s = soc.socket(soc.AF_INET, soc.SOCK_STREAM)
-s.setsockopt(soc.SOL_SOCKET, soc.SO_REUSEADDR,1)
+s = socket.socket(ipv_qual, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
 
 # Associa o socket do servidor a um endereço e começa a ouvir pedidos
 # pedidos de conexão
@@ -56,7 +60,7 @@ while 1:
         raise
         clientsock.close()
 
-    except soc.error as e:
+    except socket.error as e:
     
         print("%s : simplex-talk: socket" % e)        
         sys.exit(1)
