@@ -2,6 +2,8 @@ import socket
 
 # Da preferencia ao IPv6
 def ipv_qual(host, port):
+    #import pdb; pdb.set_trace()
+
     # IPv4 ou IPv6?
     results = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
 
