@@ -17,10 +17,7 @@ import which_ipv
 
 #for rdata in answers:
 #    print (rdata.address)
-#########################################
-
-
-
+#########################################3
 MAX_BUFFER = 1024 #256
 
 # ip:porta/arquivo ou nome:porta/arquivo.
@@ -31,24 +28,12 @@ if len(sys.argv) < 2:
     
 entrada = sys.argv[1]
 
-# Pegar ipv4, ipv6 e nome de dominio
-# XXX.XXX.XXX.XXX:YY/slaoq
-# XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:YY/slaoq
-# www.blabla.com.gov.enois.br:80/slaoq
-# ex: 2800:3f0:4001:81c::2004:80/
+tudo = re.split(':|/', entrada)
+(host, port) = tudo[0:2]
+port = int(port)
 
-tudo = entrada.split('/')
-archive = '/'.join(tudo[1:])
-hostport = tudo[0].split(':')
-port = int(hostport[-1])
-host = ':'.join(hostport[:-1])
-
-#tudo = re.split(':|/', entrada)
-#(host, port) = tudo[0:2]
-#port = int(port)
-
-#archive = tudo[2:]
-#archive = '/'.join(archive)
+archive = tudo[2:]
+archive = '/'.join(archive)
 
 
 # Criando o socket (consegue pedir IPv4 ou IPv6)
@@ -59,18 +44,7 @@ s = socket.socket(ipv_qual, socket.SOCK_STREAM)
 ip = socket.getaddrinfo(host, None, ipv_qual)[0][4][0] # nao pergunte por que
 print(ip)
 
-##############################################
-#import pdb; pdb.set_trace()
-
-#from IPy import IP
-#ip = IP(ip)
-#host = ip.reverseName()
-
-#from dns import resolver,reversename
-#addr=reversename.from_address(ip)
-#print( str(resolver.resolve(addr,"PTR")[0]) )
-#host = addr
-
+#print("Batata")
 #print(socket.getfqdn(ip))
 
 try:
@@ -97,12 +71,8 @@ while 1:
     # Mandando mensagem para o servidor (GET)
     try:
         #import pdb; pdb.set_trace()
-        data = "GET /%s HTTP/1.1" % archive
-        if host != ip:
-            data += "\r\nHOST: %s" % host
-        data += "\r\n\r\n"
 
-        print(data)
+        data = "GET /%s HTTP/1.1\r\nHOST: %s\r\n\r\n" % (archive, host)
         
         data = data.encode('utf-8')
 
