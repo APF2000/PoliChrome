@@ -5,21 +5,39 @@ import re
 import which_ipv
 import threading
 
-def thread_function():
-    print('Thread function')
+#import socket, traceback, os, sys 
+#import * from threading 
+
+host = '' 
+port = 51423    
+        
 
 class ClientThread(threading.Thread):
 
-    def _init_(self,clientAddress,clientsocket):
-        threading.Thread._init_(self)
-        self.csocket = clientsocket
-        print ("New connection added: ", clientAddress)
+    def __init__(self, socket):
+
+        threading.Thread.__init__(self, target=self.handlechild)
+        self.socket = socket
+        #print ("New connection added: ", clientAddress)
+
+    def handlechild(clientsock): 
+        # Bind to all interfaces print "New child", currentThread() .getName() 
+        print("Got connection from", clientsock.getpeername())
+        while 1: 
+            data = clientsock.recv(4096) 
+            if not len(data): 
+                break 
+            clientsock.sendall(data) 
+            # Close the connection 
+            clientsock.close() 
+            
 
     def run(self):
 
-        s = self.csocket
-
+        s = self.socket
         s.listen()
+
+        import pdb; pdb.set_trace()
         #print("Server is running on port %d; press Ctrl-C to terminate." % self.port)
 
         # Ao aceitar conexão, recebe e printa a mensagem 
@@ -38,8 +56,6 @@ class ClientThread(threading.Thread):
                 archive_name = archive_name[1:]
 
                 print(archive_name)
-
-                #import pdb; pdb.set_trace()
                 try:
                     archive = open(archive_name, 'r').read()
 
@@ -88,10 +104,33 @@ if __name__ == '__main__':
     # pedidos de conexão
     s.bind((host, port))
 
-    while True:
-        clientsock, clientAddress = s.accept()
-        newthread = ClientThread(clientAddress, clientsock)
+    #while True:
+        #clientsock, clientAddress = s.accept()
+        #newthread = ClientThread(s)
+
+        #import pdb; pdb.set_trace()
         #newthread.start()
+
+        # Set up the socket. 
+        #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+        #s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) 
+        #s.bind((host, port)) 
+        #s.listen(1) 
+    while 1: 
+        try: 
+            clientsock, clientaddr = s.accept() 
+        except KeyboardInterrupt:
+            raise 
+        except: 
+            #traceback.print_exc() 
+            continue 
+
+        import pdb; pdb.set_trace()
+
+        t = ClientThread(target = handlechild, args = [s]) 
+        t.setDaemon(1)
+        
+        t.start() 
 
 
 """ 
