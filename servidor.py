@@ -10,19 +10,17 @@ def thread_function():
 
 class ClientThread(threading.Thread):
 
-    def _init_(self, socket, port):
-
-        import pdb; pdb.set_trace()
-
-        threading.Thread.__init__(self, target = thread_function)
-        self.socket = socket
-        self.port = port
-        print ("New connection added: %s" % "eae mano")
+    def _init_(self,clientAddress,clientsocket):
+        threading.Thread._init_(self)
+        self.csocket = clientsocket
+        print ("New connection added: ", clientAddress)
 
     def run(self):
 
+        s = self.csocket
+
         s.listen()
-        print("Server is running on port %d; press Ctrl-C to terminate." % self.port)
+        #print("Server is running on port %d; press Ctrl-C to terminate." % self.port)
 
         # Ao aceitar conexão, recebe e printa a mensagem 
         while 1:
@@ -91,9 +89,9 @@ if __name__ == '__main__':
     s.bind((host, port))
 
     while True:
-        clientsock, clientAddress = server.accept()
+        clientsock, clientAddress = s.accept()
         newthread = ClientThread(clientAddress, clientsock)
-        newthread.start()
+        #newthread.start()
 
 
 """ 
