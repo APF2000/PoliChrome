@@ -5,11 +5,11 @@ import re
 import which_ipv
 import threading
 
-#import socket, traceback, os, sys 
-#import * from threading 
+import socket, traceback, os, sys
+#import * from threading
 
-host = '' 
-port = 51423    
+host = ''
+port = 51423
         
 
 class ClientThread(threading.Thread):
@@ -89,48 +89,52 @@ class ClientThread(threading.Thread):
             
             clientsock.close()
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 
-    host = 'localhost'
-    port = 51432
+host = 'localhost'
+port = 51432
 
-    ipv_qual = which_ipv.ipv_qual(host, port)
+ipv_qual = which_ipv.ipv_qual(host, port)
 
-    # Cria uma porta passiva
-    s = socket.socket(ipv_qual, socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
+# Cria uma porta passiva
+s = socket.socket(ipv_qual, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
 
-    # Associa o socket do servidor a um endereço e começa a ouvir pedidos
-    # pedidos de conexão
-    s.bind((host, port))
+# Associa o socket do servidor a um endereço e começa a ouvir pedidos
+# pedidos de conexão
+s.bind((host, port))
 
-    #while True:
-        #clientsock, clientAddress = s.accept()
-        #newthread = ClientThread(s)
+#while True:
+    #clientsock, clientAddress = s.accept()
+    #newthread = ClientThread(s)
 
-        #import pdb; pdb.set_trace()
-        #newthread.start()
+    #import pdb; pdb.set_trace()
+    #newthread.start()
 
-        # Set up the socket. 
-        #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-        #s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) 
-        #s.bind((host, port)) 
-        #s.listen(1) 
-    while 1: 
-        try: 
-            clientsock, clientaddr = s.accept() 
-        except KeyboardInterrupt:
-            raise 
-        except: 
-            #traceback.print_exc() 
-            continue 
+    # Set up the socket. 
+    #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+    #s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) 
+    #s.bind((host, port)) 
+    #s.listen(1) 
+while 1: 
+    try: 
+        clientsock, clientaddr = s.accept() 
+    except KeyboardInterrupt:
 
         import pdb; pdb.set_trace()
+        raise 
+    except Exception as e: 
+        #traceback.print_exc() 
 
-        t = ClientThread(target = handlechild, args = [s]) 
-        t.setDaemon(1)
-        
-        t.start() 
+        #import pdb; pdb.set_trace()
+        continue 
+
+    import pdb; pdb.set_trace()
+
+    t = ClientThread(target = handlechild, args = [s]) 
+    t.setDaemon(1)
+    
+    t.start() 
 
 
 """ 

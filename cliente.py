@@ -4,9 +4,11 @@ import re
 import time
 import which_ipv
 
-MAX_BUFFER = 1024 #256
+# Para rodar o cliente
+# ip:porta/arquivo ou nome:porta/arquivo
+# ex: python3 cliente.py localhost:51423/
 
-# ip:porta/arquivo ou nome:porta/arquivo.
+MAX_BUFFER = 1024 #256
 
 if len(sys.argv) < 2:
     print("usage: simplex-talk host")
@@ -46,6 +48,7 @@ except socket.herror:
 
 while 1:
     try:
+        #import pdb; pdb.set_trace()
         s.connect((ip, port))
     except socket.error as e:
         print ("%s : simplex-talk: socket error" % e)
