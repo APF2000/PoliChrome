@@ -8,32 +8,14 @@ import threading
 import time
 
 import socket, traceback, os, sys
-#import * from threading
         
 
 class ClientThread(threading.Thread):
 
-    def __init__(self, socket):
+    def __init__(self):
 
-        threading.Thread.__init__(self, target=self.handlechild)
+        threading.Thread.__init__(self)
         self.socket = socket
-        #print ("New connection added: ", clientAddress)
-
-    def handlechild(clientsock): 
-
-        print("Sou uma nova thread, meu nome e: %s" % threading.currentThread().getName())
-
-        # Bind to all interfaces print "New child", currentThread() .getName() 
-        print("Got connection from", clientsock.getpeername())
-        while 1: 
-            data = clientsock.recv(4096) 
-            if not len(data): 
-                break 
-            
-            clientsock.sendall(data) 
-            # Close the connection 
-            clientsock.close() 
-            
 
     def run(self):
 
@@ -143,7 +125,7 @@ if __name__ == '__main__':
 
         #import pdb; pdb.set_trace()
 
-        t = ClientThread(socket = s)#target = handlechild, args = [s]) 
+        t = ClientThread()#target = handlechild, args = [s]) 
         t.setDaemon(1)
         
         t.start()
