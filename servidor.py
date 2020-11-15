@@ -50,8 +50,8 @@ class ClientThread(threading.Thread):
                 
             data = data.encode('utf-8')
 
-            print("Dormindo por 5 segundos")
-            time.sleep(5)
+            #print("Dormindo por 5 segundos")
+            #time.sleep(5)
 
             clientsock.sendall(data)
             clientsock.close()
