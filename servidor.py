@@ -19,17 +19,8 @@ class ClientThread(threading.Thread):
 
     def run(self):
 
-        print("Sou2222 uma nova thread, meu nome e: %s" % threading.currentThread().getName())
-
-
         s = self.socket
-        #s.listen()
-
-        #import pdb; pdb.set_trace()
-        #print("Server is running on port %d; press Ctrl-C to terminate." % self.port)
-
-        # Ao aceitar conexão, recebe e printa a mensagem 
-        #while 1:
+        
         print('------------------------------------------------------')
         try:
             #clientsock, clientaddr = s.accept()
@@ -96,20 +87,6 @@ if __name__ == '__main__':
     s.bind((host, port))
     s.listen()
 
-    #import pdb; pdb.set_trace()
-
-    #while True:
-        #clientsock, clientAddress = s.accept()
-        #newthread = ClientThread(s)
-
-        #import pdb; pdb.set_trace()
-        #newthread.start()
-
-        # Set up the socket. 
-        #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-        #s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) 
-        #s.bind((host, port)) 
-        #s.listen(1) 
     while 1: 
         try: 
             clientsock, clientaddr = s.accept() 
@@ -117,48 +94,11 @@ if __name__ == '__main__':
 
             import pdb; pdb.set_trace()
             raise 
-        except Exception as e: 
-            #traceback.print_exc() 
-
-            #import pdb; pdb.set_trace()
+        except Exception as e:
             continue 
 
-        #import pdb; pdb.set_trace()
-
-        t = ClientThread()#target = handlechild, args = [s]) 
+        t = ClientThread()
         t.setDaemon(1)
         
         t.start()
         t.join() 
-
-
-""" 
-class ClientThread(threading.Thread):
-    def _init_(self,clientAddress,clientsocket):
-        threading.Thread._init_(self)
-        self.csocket = clientsocket
-        print ("New connection added: ", clientAddress)
-    def run(self):
-        print ("Connection from : ", clientAddress)
-        #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
-        msg = ''
-        while True:
-            data = self.csocket.recv(2048)
-            msg = data.decode()
-            if msg=='bye':
-              break
-            print ("from client", msg)
-            self.csocket.send(bytes(msg,'UTF-8'))
-        print ("Client at ", clientAddress , " disconnected...")
-LOCALHOST = "127.0.0.1"
-PORT = 8080
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-server.bind((LOCALHOST, PORT))
-print("Server started")
-print("Waiting for client request..")
-while True:
-    server.listen(1)
-    clientsock, clientAddress = server.accept()
-    newthread = ClientThread(clientAddress, clientsock)
-    newthread.start() """
