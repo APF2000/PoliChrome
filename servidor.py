@@ -20,6 +20,9 @@ class ClientThread(threading.Thread):
         #print ("New connection added: ", clientAddress)
 
     def handlechild(clientsock): 
+
+        print("Sou uma nova thread, meu nome e: %s" % threading.currentThread().getName())
+
         # Bind to all interfaces print "New child", currentThread() .getName() 
         print("Got connection from", clientsock.getpeername())
         while 1: 
@@ -34,8 +37,11 @@ class ClientThread(threading.Thread):
 
     def run(self):
 
+        print("Sou2222 uma nova thread, meu nome e: %s" % threading.currentThread().getName())
+
+
         s = self.socket
-        s.listen()
+        #s.listen()
 
         #import pdb; pdb.set_trace()
         #print("Server is running on port %d; press Ctrl-C to terminate." % self.port)
@@ -108,6 +114,8 @@ if __name__ == '__main__':
     s.bind((host, port))
     s.listen()
 
+    #import pdb; pdb.set_trace()
+
     #while True:
         #clientsock, clientAddress = s.accept()
         #newthread = ClientThread(s)
@@ -138,7 +146,8 @@ if __name__ == '__main__':
         t = ClientThread(socket = s)#target = handlechild, args = [s]) 
         t.setDaemon(1)
         
-        t.start() 
+        t.start()
+        t.join() 
 
 
 """ 
