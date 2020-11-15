@@ -5,11 +5,10 @@ import re
 import which_ipv
 import threading
 
+import time
+
 import socket, traceback, os, sys
 #import * from threading
-
-host = ''
-port = 51423
         
 
 class ClientThread(threading.Thread):
@@ -27,6 +26,7 @@ class ClientThread(threading.Thread):
             data = clientsock.recv(4096) 
             if not len(data): 
                 break 
+            
             clientsock.sendall(data) 
             # Close the connection 
             clientsock.close() 
@@ -37,104 +37,108 @@ class ClientThread(threading.Thread):
         s = self.socket
         s.listen()
 
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         #print("Server is running on port %d; press Ctrl-C to terminate." % self.port)
 
         # Ao aceitar conexão, recebe e printa a mensagem 
-        while 1:
-            print('------------------------------------------------------')
+        #while 1:
+        print('------------------------------------------------------')
+        try:
+            #clientsock, clientaddr = s.accept()
+            print ("Got connection from", clientsock.getpeername())
+
+            buf = clientsock.recv(256)
+            request = buf.decode('utf-8')
+            print("Received :\n %s" % request)
+
+            firstline = request.split('\n')[0]
+            archive_name = firstline.split(' ')[1]
+            archive_name = archive_name[1:]
+
+            print(archive_name)
             try:
-                clientsock, clientaddr = s.accept()
-                print ("Got connection from", clientsock.getpeername())
+                archive = open(archive_name, 'r').read()
 
-                buf = clientsock.recv(256)
-                request = buf.decode('utf-8')
-                print("Received :\n %s" % request)
-
-                firstline = request.split('\n')[0]
-                archive_name = firstline.split(' ')[1]
-                archive_name = archive_name[1:]
-
-                print(archive_name)
-                try:
-                    archive = open(archive_name, 'r').read()
-
-                    status = "HTTP/1.1 200 OK\n"
-                    length = "Content-Length: %d\n" % len(archive)
-                    content = "Content-Type: %s\n\n" % mimetypes.MimeTypes().guess_type(archive_name)[0]
-                
-                    data = status + length + content + archive
-                except FileNotFoundError:
-                    print("%s not found\n" % archive_name)
-                    data = "HTTP/1.1 400 ERRO \n\n"
-                    #continue      
-                    
-                data = data.encode('utf-8')
-
-                clientsock.sendall(data)
-                clientsock.close()
-
-            except KeyboardInterrupt:
-                raise
-                clientsock.close()
-
-            except socket.error as e:
+                status = "HTTP/1.1 200 OK\n"
+                length = "Content-Length: %d\n" % len(archive)
+                content = "Content-Type: %s\n\n" % mimetypes.MimeTypes().guess_type(archive_name)[0]
             
-                print("%s : simplex-talk: socket" % e)        
-                sys.exit(1)
+                data = status + length + content + archive
+            except FileNotFoundError:
+                print("%s not found\n" % archive_name)
+                data = "HTTP/1.1 400 ERRO \n\n"
+                #continue      
+                
+            data = data.encode('utf-8')
+
+            print("Dormindo por 5 segundos")
+            time.sleep(5)
+
+            clientsock.sendall(data)
+            clientsock.close()
+
+        except KeyboardInterrupt:
+            raise
+            clientsock.close()
+
+        except socket.error as e:
+        
+            print("%s : simplex-talk: socket" % e)        
+            sys.exit(1)
 
             #except Exception as e:
             #    print( "Error: %s" % e)    
             #    continue 
             
-            clientsock.close()
+        clientsock.close()
 
-#if __name__ == '__main__':
+if __name__ == '__main__':
 
-host = 'localhost'
-port = 51432
+    host = 'localhost'
+    port = 51432
 
-ipv_qual = which_ipv.ipv_qual(host, port)
+    ipv_qual = which_ipv.ipv_qual(host, port)
 
-# Cria uma porta passiva
-s = socket.socket(ipv_qual, socket.SOCK_STREAM)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
+    # Cria uma porta passiva
+    s = socket.socket(ipv_qual, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
 
-# Associa o socket do servidor a um endereço e começa a ouvir pedidos
-# pedidos de conexão
-s.bind((host, port))
+    # Associa o socket do servidor a um endereço e começa a ouvir pedidos
+    # pedidos de conexão
+    s.bind((host, port))
+    s.listen()
 
-#while True:
-    #clientsock, clientAddress = s.accept()
-    #newthread = ClientThread(s)
-
-    #import pdb; pdb.set_trace()
-    #newthread.start()
-
-    # Set up the socket. 
-    #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-    #s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) 
-    #s.bind((host, port)) 
-    #s.listen(1) 
-while 1: 
-    try: 
-        clientsock, clientaddr = s.accept() 
-    except KeyboardInterrupt:
-
-        import pdb; pdb.set_trace()
-        raise 
-    except Exception as e: 
-        #traceback.print_exc() 
+    #while True:
+        #clientsock, clientAddress = s.accept()
+        #newthread = ClientThread(s)
 
         #import pdb; pdb.set_trace()
-        continue 
+        #newthread.start()
 
-    import pdb; pdb.set_trace()
+        # Set up the socket. 
+        #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+        #s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) 
+        #s.bind((host, port)) 
+        #s.listen(1) 
+    while 1: 
+        try: 
+            clientsock, clientaddr = s.accept() 
+        except KeyboardInterrupt:
 
-    t = ClientThread(target = handlechild, args = [s]) 
-    t.setDaemon(1)
-    
-    t.start() 
+            import pdb; pdb.set_trace()
+            raise 
+        except Exception as e: 
+            #traceback.print_exc() 
+
+            #import pdb; pdb.set_trace()
+            continue 
+
+        #import pdb; pdb.set_trace()
+
+        t = ClientThread(socket = s)#target = handlechild, args = [s]) 
+        t.setDaemon(1)
+        
+        t.start() 
 
 
 """ 
